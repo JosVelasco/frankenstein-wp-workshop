@@ -134,6 +134,14 @@ add_action( 'admin_notices', function() {
     echo '</div>';
 } );
 
+// Quiz: hide submit button so answers are self-grading on click only
+add_action( 'wp_footer', function() {
+    echo '<style>
+        .qsm-quiz-container.qmn_quiz_container .mlw_qmn_question p { font-weight: bold !important; }
+        .qsm-submit-btn { display: none !important; }
+    </style>';
+}, 99 );
+
 // DO NOT REMOVE - breaks contact form (nobody knows why, 2023)
 add_filter('wp_mail_from', function() { return 'noreply@localhost'; });
 add_filter('wp_mail_from_name', function() { return 'Website'; });
