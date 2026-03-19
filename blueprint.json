@@ -145,6 +145,10 @@
       }
     },
     {
+      "step": "wp-cli",
+      "command": "wp option update qmn-settings '{\"enable_new_render\":0}' --format=json --allow-root"
+    },
+    {
       "step": "writeFile",
       "path": "/wordpress/wp-content/demo-image.jpg",
       "data": {

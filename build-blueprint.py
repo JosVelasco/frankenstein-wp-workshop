@@ -330,6 +330,11 @@ blueprint = {
             "step": "installPlugin",
             "pluginData": {"resource": "wordpress.org/plugins", "slug": "quiz-master-next"}
         },
+        # Disable QSM's "new render" mode (breaks per-click feedback and auto-start)
+        {
+            "step": "wp-cli",
+            "command": "wp option update qmn-settings '{\"enable_new_render\":0}' --format=json --allow-root"
+        },
         # 5. Download demo image first, then import it
         {
             "step": "writeFile",
