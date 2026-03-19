@@ -123,18 +123,13 @@ add_action( 'enqueue_block_editor_assets', function() {
 // Workshop banner
 add_action( 'admin_notices', function() {
     $checklist = get_page_by_path( 'workshop-checklist' );
-    $quiz      = get_page_by_path( 'workshop-quiz' );
     $url       = $checklist ? admin_url( 'post.php?post=' . $checklist->ID . '&action=edit' ) : admin_url( 'edit.php?post_type=page' );
-    $quiz_url  = $quiz ? get_permalink( $quiz->ID ) : '';
     $img_url   = content_url( 'uploads/frankenstein-wp-workshop.jpg' );
     echo '<div style="background:#111;color:#e8e8e8;padding:0;border:5px dashed #7a5500;margin:10px 0 20px;line-height:1.7;overflow:hidden;">';
     echo '<img src="' . esc_url( $img_url ) . '" alt="Frankenstein WP Workshop" style="display:block;width:100%;height:auto;">';
     echo '<div style="padding:16px 24px;">';
     echo '<p style="font-family:\'IM Fell English\',serif;font-style:italic;font-size:22px;font-weight:normal;margin:0 0 14px;line-height:1.8;color:#e8e8e8;">Five developers came and went. Each one added their piece, patched their panic, and left a comment no one dared remove. What remains is a monument to good intentions.</p>';
     echo '<a href="' . esc_url( $url ) . '" style="font-family:\'Cinzel\',serif;color:#4caf50;font-size:22px;font-weight:600;text-decoration:underline;">&rarr; Open Workshop Checklist</a>';
-    if ( $quiz_url ) {
-        echo '&nbsp;&nbsp;&nbsp;<a href="' . esc_url( $quiz_url ) . '" style="font-family:\'Cinzel\',serif;color:#ff9800;font-size:22px;font-weight:600;text-decoration:underline;">&rarr; Take the Quiz</a>';
-    }
     echo '</div>';
     echo '</div>';
 } );

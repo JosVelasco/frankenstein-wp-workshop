@@ -46,11 +46,6 @@ $c .= '<!-- wp:paragraph --><p><strong>Discussion:</strong> Identify at least 3 
 $c .= '<!-- wp:heading --><h2 class="wp-block-heading">Your Conclusions</h2><!-- /wp:heading -->';
 $c .= '<!-- wp:paragraph --><p>Write your notes here. What did you find? What surprised you most? Take a screenshot to share with the group.</p><!-- /wp:paragraph -->';
 
-$quiz_page = get_page_by_path( 'workshop-quiz' );
-if ( $quiz_page ) {
-    $c .= '<!-- wp:paragraph --><p><a href="' . get_permalink( $quiz_page->ID ) . '"><strong>Ready? Take the Workshop Quiz &rarr;</strong></a></p><!-- /wp:paragraph -->';
-}
-
 wp_update_post( array( 'ID' => $pid, 'post_content' => $c ) );
 """
 
@@ -60,23 +55,25 @@ require_once '/wordpress/wp-load.php';
 
 global $wpdb;
 
-$quiz_id = null;
 $wpdb->insert( $wpdb->prefix . 'mlw_quizzes', array(
-    'quiz_name'          => 'Frankenstein WP Workshop Quiz',
+    'quiz_name'          => 'Frankenstein WP: Knowledge Check',
     'randomness_order'   => 2,
     'show_score'         => 1,
     'total_user_tries'   => 0,
     'ajax_show_correct'  => 1,
+    'require_log_in'     => 0,
     'user_name'          => 2,
     'user_comp'          => 2,
     'user_email'         => 2,
     'user_phone'         => 2,
     'comment_section'    => 1,
-    'submit_button_text' => 'Submit Answers',
-    'message_before'     => 'Test your understanding of the workshop tasks. All questions are based on what you explored in this environment.',
-    'message_after'      => 'You answered %SCORE% out of %TOTAL_QUESTIONS% correctly.',
     'deleted'            => 0,
+    'quiz_views'         => 0,
+    'quiz_taken'         => 0,
     'last_activity'      => current_time( 'mysql' ),
+    'submit_button_text' => 'Submit Answers',
+    'message_before'     => 'Eight questions based on what you just explored. One from each area of the workshop.',
+    'message_after'      => 'You answered %SCORE% out of %TOTAL_QUESTIONS% correctly.',
 ) );
 $quiz_id = $wpdb->insert_id;
 
@@ -93,6 +90,7 @@ function fw_q( $quiz_id, $text, $answers, $correct_idx ) {
         'correct_answer'        => $correct_idx + 1,
         'question_type'         => 0,
         'question_type_new'     => '0',
+        'question_order'        => 0,
         'comments'              => 1,
         'question_settings'     => maybe_serialize( array( 'Required' => '1' ) ),
         'deleted'               => 0,
@@ -191,21 +189,47 @@ $qids[] = fw_q( $quiz_id,
     2
 );
 
+// Link questions to quiz via pages structure (QSM uses this for its IN() query)
 $wpdb->update(
     $wpdb->prefix . 'mlw_quizzes',
     array( 'quiz_settings' => maybe_serialize( array( 'pages' => array( $qids ) ) ) ),
     array( 'quiz_id' => $quiz_id )
 );
 
-$post_id = wp_insert_post( array(
-    'post_title'   => 'Workshop Quiz',
-    'post_name'    => 'workshop-quiz',
+// Create published qsm_quiz post (required so QSM does not show a draft warning)
+$quiz_post_id = wp_insert_post( array(
+    'post_title'   => 'Frankenstein WP: Knowledge Check',
     'post_content' => '[mlw_quizmaster quiz=' . $quiz_id . ']',
     'post_status'  => 'publish',
-    'post_author'  => 1,
+    'post_author'  => get_current_user_id(),
     'post_type'    => 'qsm_quiz',
 ) );
-add_post_meta( $post_id, 'quiz_id', intval( $quiz_id ) );
+add_post_meta( $quiz_post_id, 'quiz_id', intval( $quiz_id ) );
+
+// Create the publicly accessible quiz page (regular page, not qsm_quiz CPT)
+$kid = wp_insert_post( array(
+    'post_title'  => 'Knowledge Check',
+    'post_name'   => 'knowledge-check',
+    'post_status' => 'publish',
+    'post_type'   => 'page',
+    'post_content' => '',
+) );
+$shortcode = '[mlw_quizmaster quiz=' . $quiz_id . ']';
+$k  = '<!-- wp:paragraph --><p>Eight questions. One from each area of the workshop. If you get any wrong, you can retake the quiz -- correct answers will be shown.</p><!-- /wp:paragraph -->';
+$k .= '<!-- wp:shortcode -->' . $shortcode . '<!-- /wp:shortcode -->';
+wp_update_post( array( 'ID' => $kid, 'post_content' => $k ) );
+
+// Append Knowledge Check link and conclusions to the checklist page
+$checklist = get_page_by_path( 'workshop-checklist' );
+if ( $checklist ) {
+    $quiz_url = get_permalink( $kid );
+    $q  = '<!-- wp:separator --><hr class="wp-block-separator has-alpha-channel-opacity"/><!-- /wp:separator -->';
+    $q .= '<!-- wp:heading {"level":2} --><h2 class="wp-block-heading">Knowledge Check</h2><!-- /wp:heading -->';
+    $q .= '<!-- wp:paragraph --><p>Finished all five tasks? Head to the <a href="' . $quiz_url . '">Knowledge Check</a> to confirm what you have learned.</p><!-- /wp:paragraph -->';
+    wp_update_post( array( 'ID' => $checklist->ID, 'post_content' => $checklist->post_content . $q ) );
+}
+
+echo 'quiz done';
 """
 
 # ── Blueprint structure ───────────────────────────────────────────────────────
