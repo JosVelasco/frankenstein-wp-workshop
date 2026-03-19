@@ -71,9 +71,9 @@ $wpdb->insert( $wpdb->prefix . 'mlw_quizzes', array(
     'quiz_views'         => 0,
     'quiz_taken'         => 0,
     'last_activity'      => current_time( 'mysql' ),
-    'submit_button_text' => 'Submit Answers',
-    'message_before'     => 'Eight questions based on what you just explored. One from each area of the workshop.',
-    'message_after'      => 'You answered %SCORE% out of %TOTAL_QUESTIONS% correctly.',
+    'submit_button_text' => '',
+    'message_before'     => '',
+    'message_after'      => '',
 ) );
 $quiz_id = $wpdb->insert_id;
 
@@ -215,7 +215,7 @@ $kid = wp_insert_post( array(
     'post_content' => '',
 ) );
 $shortcode = '[mlw_quizmaster quiz=' . $quiz_id . ']';
-$k  = '<!-- wp:paragraph --><p>Eight questions. One from each area of the workshop. If you get any wrong, you can retake the quiz -- correct answers will be shown.</p><!-- /wp:paragraph -->';
+$k  = '<!-- wp:paragraph --><p>Eight questions, one from each area of the workshop. Click an answer to see immediately whether you were right.</p><!-- /wp:paragraph -->';
 $k .= '<!-- wp:shortcode -->' . $shortcode . '<!-- /wp:shortcode -->';
 wp_update_post( array( 'ID' => $kid, 'post_content' => $k ) );
 
