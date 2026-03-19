@@ -134,21 +134,14 @@ add_action( 'admin_notices', function() {
     echo '</div>';
 } );
 
-// Quiz: show all questions immediately; feedback on answer click; no buttons needed
+// Quiz: hide all navigation buttons; feedback on answer click via enable_quick_result_mc
 add_action( 'wp_footer', function() {
     echo '<style>
         .qsm-quiz-container.qmn_quiz_container .mlw_qmn_question p { font-weight: bold !important; }
         .qsm-submit-btn { display: none !important; }
-        .mlw_custom_start { visibility: hidden !important; }
+        .mlw_custom_start { display: none !important; }
+        .mlw_previous { display: none !important; }
     </style>';
-    echo '<script>
-    window.addEventListener("load", function() {
-        setTimeout(function() {
-            var btn = document.querySelector(".qsm-quiz-container .mlw_custom_start");
-            if (btn) btn.click();
-        }, 50);
-    });
-    </script>';
 }, 99 );
 
 // DO NOT REMOVE - breaks contact form (nobody knows why, 2023)
