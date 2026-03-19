@@ -92,7 +92,7 @@ function fw_q( $quiz_id, $text, $answers, $correct_idx ) {
         'question_type_new'     => '0',
         'question_order'        => 0,
         'comments'              => 1,
-        'question_settings'     => maybe_serialize( array( 'Required' => '1' ) ),
+        'question_settings'     => maybe_serialize( array( 'Required' => '0' ) ),
         'deleted'               => 0,
         'deleted_question_bank' => 0,
     ) );
@@ -192,7 +192,10 @@ $qids[] = fw_q( $quiz_id,
 // Link questions to quiz via pages structure (QSM uses this for its IN() query)
 $wpdb->update(
     $wpdb->prefix . 'mlw_quizzes',
-    array( 'quiz_settings' => maybe_serialize( array( 'pages' => array( $qids ) ) ) ),
+    array( 'quiz_settings' => maybe_serialize( array(
+        'pages'                  => array( $qids ),
+        'enable_quick_result_mc' => 1,
+    ) ) ),
     array( 'quiz_id' => $quiz_id )
 );
 
