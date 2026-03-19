@@ -141,6 +141,7 @@ add_action( 'wp_footer', function() {
         .qsm-submit-btn { display: none !important; }
         .mlw_custom_start { display: none !important; }
         .mlw_previous { display: none !important; }
+        .quiz_section.qsm-question-wrapper { margin-bottom: 30px; }
     </style>';
 }, 99 );
 
